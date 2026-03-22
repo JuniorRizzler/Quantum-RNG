@@ -1,8 +1,8 @@
-# BB84 Quantum Key Distribution Lab
+# Quantum Teleportation Lab
 
-A browser-based interactive demo of the BB84 quantum cryptography protocol.
+A browser-based interactive demo of quantum teleportation.
 
-This project simulates how Alice and Bob create a shared secret key using random bases and how an eavesdropper, Eve, introduces detectable errors by measuring photons in the wrong basis.
+This project shows how an unknown qubit state can be transferred from Alice to Bob using an entangled pair plus two classical bits. It is designed to be visually interesting, school-friendly, and easy to explain without pretending that matter itself is being teleported.
 
 ## Live Web App
 
@@ -17,49 +17,45 @@ Core files:
 
 ## What It Demonstrates
 
-- Alice chooses random bits and random bases
-- Bob measures with his own random bases
-- only matching-basis positions are kept
-- some kept bits are revealed to estimate the error rate
-- the remaining bits form the secret key
-- Eve can intercept and resend photons, increasing the QBER
+- choosing an input qubit state
+- creating a shared Bell pair
+- Bell-basis measurement on Alice's side
+- generating two classical measurement bits
+- Bob's correction operation
+- reconstruction of the original state on Bob's qubit
 
-## Features
+## Why It’s Cooler Than a Basic Simulator
 
-- configurable number of photon attempts
-- adjustable test fraction
-- optional eavesdropper with intercept probability
-- sifted key and final secret key views
-- transmission timeline visualization
-- first-24 transmission breakdown table
-- QBER and key-agreement metrics
-- JSON report export
+- it has a step-by-step visual stage
+- it shows the flow of entanglement and classical information
+- it explains what each step means in plain language
+- it makes the “teleportation” idea feel concrete and memorable
 
-## Why It Is Useful
+## What It Does Not Claim
 
-This is a clean way to show the main idea behind quantum cryptography:
+- it does not teleport matter
+- it does not move information faster than light
+- it does not run on real quantum hardware
 
-- measuring a quantum state in the wrong basis disturbs it
-- an eavesdropper can be detected statistically
-- Alice and Bob do not need to reveal the whole key to test channel safety
+It is a browser-based educational visualization of the protocol.
 
 ## How To Use
 
 1. Open the deployed site.
-2. Click `Run BB84`.
-3. Observe the kept bits, test bits, and final key.
-4. Turn on Eve and raise the intercept probability.
-5. Run the protocol again and compare the QBER.
-6. Export a report if needed.
+2. Pick a qubit state such as `|+⟩` or `|i+⟩`.
+3. Click `Teleport State`.
+4. Watch the protocol advance through the five steps.
+5. Read the two classical bits and Bob's correction.
+6. Export the report if you want a saved record.
 
 ## Good Demo Script
 
-1. Run with Eve off.
-2. Point out that the QBER is near zero.
-3. Turn Eve on at `100%`.
-4. Run again.
-5. Show that the QBER rises because Eve sometimes measures in the wrong basis.
-6. Explain that this disturbance is the reason BB84 can detect eavesdropping.
+1. Start with `|+⟩`.
+2. Explain that Alice wants to transfer this unknown state.
+3. Point out that Alice and Bob first share an entangled pair.
+4. Show that Alice measures and gets two classical bits.
+5. Explain that Bob still needs those classical bits.
+6. Show Bob applying the correction and recovering the original state.
 
 ## Local Development
 
@@ -81,4 +77,4 @@ The previous Python project is preserved only as reference in:
 
 - `legacy-desktop/`
 
-It is not part of the deployed BB84 web app.
+It is not part of the deployed teleportation web app.
