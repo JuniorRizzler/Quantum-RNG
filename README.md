@@ -45,7 +45,7 @@ Do not claim this is a certified true quantum random number generator. The stren
 
 ## Project Structure
 
-- [app.py](C:/Users/2029089/camera-qrng-prototype/app.py): main GUI and CLI app
+- [desktop_app.py](C:/Users/2029089/camera-qrng-prototype/desktop_app.py): main GUI and CLI app
 - [qrng/camera_entropy.py](C:/Users/2029089/camera-qrng-prototype/qrng/camera_entropy.py): camera capture and entropy sampling
 - [qrng/extractor.py](C:/Users/2029089/camera-qrng-prototype/qrng/extractor.py): extraction modes and whitening
 - [qrng/stats.py](C:/Users/2029089/camera-qrng-prototype/qrng/stats.py): randomness tests and histograms
@@ -62,7 +62,7 @@ python -m pip install -r requirements.txt
 GUI:
 
 ```bash
-python app.py
+python desktop_app.py
 ```
 
 Windows double-click launcher:
@@ -74,13 +74,13 @@ run_qrng_lab.bat
 CLI:
 
 ```bash
-python app.py --cli --mode sha256_whitened --blocks 8 --min 1 --max 100
+python desktop_app.py --cli --mode sha256_whitened --blocks 8 --min 1 --max 100
 ```
 
 If your webcam is not camera `0`, try:
 
 ```bash
-python app.py --camera-index 1
+python desktop_app.py --camera-index 1
 ```
 
 ## Vercel Deployment
