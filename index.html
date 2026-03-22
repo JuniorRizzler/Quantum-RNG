@@ -3,165 +3,161 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Quantum RNG Lab</title>
-  <meta name="description" content="A browser-based hardware-noise RNG lab using webcam sensor entropy, extraction modes, statistical tests, and report export.">
+  <title>BB84 Quantum Cryptography Lab</title>
+  <meta name="description" content="Interactive BB84 quantum key distribution demo with Alice, Bob, Eve, sifted keys, and error-rate analysis.">
   <link rel="stylesheet" href="./styles.css">
 </head>
 <body>
   <div class="shell">
     <header class="hero panel">
-      <div>
-        <p class="eyebrow">Web Experiment</p>
-        <h1>Quantum RNG Lab</h1>
+      <div class="hero-copy">
+        <p class="eyebrow">Quantum Cryptography Demo</p>
+        <h1>BB84 Quantum Key Distribution Lab</h1>
         <p class="lede">
-          A browser-based hardware-noise random number lab that captures webcam entropy, applies
-          extraction pipelines, tests statistical quality, and exports experiment reports.
+          Simulate how Alice and Bob build a shared secret key with quantum bases, and see how an
+          eavesdropper changes the error rate. Everything runs client-side in the browser.
         </p>
       </div>
-      <div class="hero-meta">
-        <div class="metric"><strong>3</strong><span>Extraction modes</span></div>
-        <div class="metric"><strong>6</strong><span>Randomness checks</span></div>
-        <div class="metric"><strong>100%</strong><span>Client-side</span></div>
+      <div class="hero-metrics">
+        <article class="metric"><strong id="heroShots">128</strong><span>Photon attempts</span></article>
+        <article class="metric"><strong id="heroQber">0.0%</strong><span>Estimated QBER</span></article>
+        <article class="metric"><strong id="heroKeyBits">0</strong><span>Final key bits</span></article>
       </div>
     </header>
 
     <main class="grid">
       <section class="panel controls">
         <div class="section-head">
-          <h2>Controls</h2>
-          <span id="statusBadge" class="badge">Idle</span>
+          <h2>Protocol Controls</h2>
+          <span id="statusBadge" class="badge">Ready</span>
         </div>
 
         <div class="controls-grid">
           <label>
-            <span>Camera</span>
-            <select id="cameraSelect"></select>
+            <span>Photon attempts</span>
+            <input id="shotCountInput" type="number" min="16" max="512" step="16" value="128">
           </label>
           <label>
-            <span>Mode</span>
-            <select id="modeSelect">
-              <option value="raw_lsb">raw_lsb</option>
-              <option value="von_neumann">von_neumann</option>
-              <option value="sha256_whitened" selected>sha256_whitened</option>
-            </select>
+            <span>Test fraction</span>
+            <input id="testFractionInput" type="number" min="0.1" max="0.9" step="0.05" value="0.25">
           </label>
           <label>
-            <span>Blocks</span>
-            <input id="blocksInput" type="number" min="1" max="64" value="8">
+            <span>Eve intercept probability</span>
+            <input id="eveProbabilityInput" type="range" min="0" max="100" step="5" value="0">
+            <strong id="eveProbabilityLabel" class="inline-value">0%</strong>
           </label>
-          <label>
-            <span>Condition</span>
-            <select id="conditionSelect">
-              <option>lens covered</option>
-              <option>room light</option>
-              <option>moving scene</option>
-              <option>textured object</option>
-              <option>custom</option>
-            </select>
-          </label>
-        </div>
-
-        <div class="controls-grid range-grid">
-          <label>
-            <span>Min Integer</span>
-            <input id="minInput" type="number" value="1">
-          </label>
-          <label>
-            <span>Max Integer</span>
-            <input id="maxInput" type="number" value="100">
-          </label>
-          <label class="wide">
-            <span>Condition Note</span>
-            <input id="conditionNoteInput" type="text" placeholder="Optional observation">
+          <label class="toggle-wrap">
+            <span>Eavesdropper</span>
+            <label class="toggle">
+              <input id="eveEnabledInput" type="checkbox">
+              <span class="toggle-slider"></span>
+            </label>
           </label>
         </div>
 
         <div class="button-row">
-          <button id="startCameraBtn" class="primary">Start Camera</button>
-          <button id="generateBtn">Generate Sample</button>
-          <button id="integerBtn">Generate Integer</button>
-          <button id="recordBtn">Record Comparison</button>
-          <button id="reportBtn">Export Report</button>
+          <button id="runBtn" class="primary">Run BB84</button>
+          <button id="rerunBtn">Rerun Same Settings</button>
+          <button id="exportBtn">Export Report</button>
         </div>
       </section>
 
-      <section class="panel preview-panel">
+      <section class="panel protocol-panel">
         <div class="section-head">
-          <h2>Entropy Preview</h2>
-          <span id="qualityBadge" class="badge subtle">No sample yet</span>
+          <h2>Protocol Steps</h2>
         </div>
-        <div class="preview-wrap">
-          <video id="cameraFeed" autoplay playsinline muted></video>
-          <canvas id="diffCanvas" width="640" height="360"></canvas>
+        <ol class="step-list">
+          <li>Alice chooses random bits and random bases: rectilinear <code>+</code> or diagonal <code>×</code>.</li>
+          <li>Alice encodes each bit into a photon polarization state.</li>
+          <li>Eve may intercept some photons, measure them in a random basis, and resend them.</li>
+          <li>Bob measures each photon in a random basis of his own.</li>
+          <li>Alice and Bob publicly compare bases, keeping only positions where their bases matched.</li>
+          <li>They sacrifice some kept bits to estimate the quantum bit error rate. The rest become the secret key.</li>
+        </ol>
+      </section>
+
+      <section class="panel metrics-panel">
+        <div class="section-head">
+          <h2>Session Metrics</h2>
         </div>
+        <div id="metricsGrid" class="stats-grid"></div>
+      </section>
+
+      <section class="panel chart-panel wide">
+        <div class="section-head">
+          <h2>Transmission Timeline</h2>
+        </div>
+        <canvas id="timelineCanvas" width="1120" height="260"></canvas>
         <p class="small-note">
-          Tip: cover the lens, switch to room light, and wave your hand to compare conditions.
+          Green tiles were kept after basis comparison. Gold marks test bits. Red signals mismatches in the tested positions.
         </p>
       </section>
 
-      <section class="panel number-panel">
+      <section class="panel table-panel wide">
         <div class="section-head">
-          <h2>Random Whole Number</h2>
+          <h2>First 24 Transmissions</h2>
         </div>
-        <div id="numberOutput" class="number-output">No number generated yet</div>
-        <div id="sampleSummary" class="summary">Generate a sample to evaluate output quality.</div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Alice Bit</th>
+                <th>Alice Basis</th>
+                <th>Encoded State</th>
+                <th>Eve</th>
+                <th>Bob Basis</th>
+                <th>Bob Bit</th>
+                <th>Keep?</th>
+                <th>Tested?</th>
+              </tr>
+            </thead>
+            <tbody id="transmissionTableBody"></tbody>
+          </table>
+        </div>
       </section>
 
-      <section class="panel tests-panel">
+      <section class="panel key-panel">
         <div class="section-head">
-          <h2>Randomness Tests</h2>
+          <h2>Sifted Key</h2>
         </div>
-        <div id="statsGrid" class="stats-grid"></div>
+        <div class="key-block">
+          <h3>Alice</h3>
+          <textarea id="aliceKeyOutput" readonly></textarea>
+        </div>
+        <div class="key-block">
+          <h3>Bob</h3>
+          <textarea id="bobKeyOutput" readonly></textarea>
+        </div>
       </section>
 
-      <section class="panel output-panel">
+      <section class="panel key-panel">
         <div class="section-head">
-          <h2>Hex Output</h2>
+          <h2>Final Secret Key</h2>
         </div>
-        <textarea id="hexOutput" readonly></textarea>
-      </section>
-
-      <section class="panel chart-panel">
-        <div class="section-head">
-          <h2>Distribution Chart</h2>
+        <div class="key-block">
+          <h3>Shared Bits</h3>
+          <textarea id="finalKeyOutput" readonly></textarea>
         </div>
-        <canvas id="histogramCanvas" width="520" height="240"></canvas>
-      </section>
-
-      <section class="panel chart-panel">
-        <div class="section-head">
-          <h2>History Chart</h2>
+        <div class="key-explain">
+          <p id="keySummary" class="summary">Run the protocol to generate a key.</p>
         </div>
-        <canvas id="historyCanvas" width="520" height="240"></canvas>
-      </section>
-
-      <section class="panel compare-panel">
-        <div class="section-head">
-          <h2>Comparison Log</h2>
-        </div>
-        <div id="comparisonLog" class="log-list">No comparisons recorded yet.</div>
       </section>
 
       <section class="panel notes-panel">
         <div class="section-head">
-          <h2>Method</h2>
+          <h2>Why BB84 Matters</h2>
         </div>
-        <ol class="method-list">
-          <li>Capture webcam frames and convert them to grayscale.</li>
-          <li>Compute frame-to-frame pixel differences to emphasize sensor noise and motion.</li>
-          <li>Extract least-significant bits from the mixed pixels.</li>
-          <li>Optionally reduce bias with Von Neumann extraction.</li>
-          <li>Optionally whiten with SHA-256 using the browser crypto API.</li>
-          <li>Run statistical checks, generate integers, and export a report.</li>
-        </ol>
-        <p class="small-note">
-          This is a browser-based hardware-noise RNG prototype, not a certified true quantum random number generator.
-        </p>
+        <ul class="bullet-list">
+          <li>It shows how quantum measurement disturbs information.</li>
+          <li>If Eve measures in the wrong basis, she introduces detectable errors.</li>
+          <li>Alice and Bob do not need to reveal the final key itself, only some test bits.</li>
+          <li>The error rate, or QBER, tells them whether the channel looks safe.</li>
+        </ul>
       </section>
     </main>
   </div>
 
-  <canvas id="workCanvas" width="640" height="360" hidden></canvas>
   <script src="./web_app.js"></script>
 </body>
 </html>
