@@ -101,13 +101,17 @@ h2, h3 { margin: 0; }
 .bits-panel,
 .table-panel,
 .notes-panel,
-.stage-panel {
+.stage-panel,
+.circuit-panel,
+.equation-panel {
   padding: 22px;
 }
 
 .controls,
 .stage-panel.wide,
 .notes-panel.wide { grid-column: span 12; }
+.circuit-panel { grid-column: span 7; }
+.equation-panel { grid-column: span 5; }
 .story-panel { grid-column: span 7; }
 .bits-panel { grid-column: span 5; }
 .table-panel { grid-column: span 12; }
@@ -282,12 +286,21 @@ canvas {
 }
 
 .story-output,
-.timeline-list {
+.timeline-list,
+.equation-output {
   min-height: 220px;
   background: rgba(5,11,20,0.94);
   border: 1px solid var(--border);
   border-radius: 18px;
   padding: 16px;
+}
+
+.equation-output {
+  margin: 0;
+  white-space: pre-wrap;
+  font-family: Consolas, monospace;
+  color: var(--accent-2);
+  line-height: 1.65;
 }
 
 .story-step + .story-step {
@@ -351,7 +364,9 @@ canvas {
   }
 
   .story-panel,
-  .bits-panel {
+  .bits-panel,
+  .circuit-panel,
+  .equation-panel {
     grid-column: span 12;
   }
 }

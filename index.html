@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Quantum Teleportation Lab</title>
-  <meta name="description" content="Interactive quantum teleportation demo showing entanglement, Bell measurement, classical bits, and Bob's correction.">
+  <meta name="description" content="Interactive quantum teleportation demo showing entanglement, Bell measurement, circuit gates, state equations, classical bits, and Bob's correction.">
   <link rel="stylesheet" href="./styles.css">
 </head>
 <body>
@@ -19,7 +19,7 @@
         </p>
       </div>
       <div class="hero-metrics">
-        <article class="metric"><strong id="heroState">|+⟩</strong><span>Input state</span></article>
+        <article class="metric"><strong id="heroState">|+&rang;</strong><span>Input state</span></article>
         <article class="metric"><strong id="heroBits">00</strong><span>Classical bits</span></article>
         <article class="metric"><strong id="heroCorrection">I</strong><span>Bob correction</span></article>
       </div>
@@ -36,12 +36,12 @@
           <label>
             <span>Input qubit state</span>
             <select id="stateSelect">
-              <option value="zero">|0⟩</option>
-              <option value="one">|1⟩</option>
-              <option value="plus" selected>|+⟩</option>
-              <option value="minus">|−⟩</option>
-              <option value="iplus">|i+⟩</option>
-              <option value="iminus">|i−⟩</option>
+              <option value="zero">|0&rang;</option>
+              <option value="one">|1&rang;</option>
+              <option value="plus" selected>|+&rang;</option>
+              <option value="minus">|-&rang;</option>
+              <option value="iplus">|i+&rang;</option>
+              <option value="iminus">|i-&rang;</option>
             </select>
           </label>
           <label>
@@ -81,12 +81,12 @@
         <div class="qubit-grid">
           <article class="qubit-card">
             <span class="qubit-label">Alice Input Qubit</span>
-            <div id="aliceInputState" class="qubit-state">|+⟩</div>
+            <div id="aliceInputState" class="qubit-state">|+&rang;</div>
             <p id="aliceInputDesc" class="qubit-desc">Unknown state to teleport</p>
           </article>
           <article class="qubit-card">
             <span class="qubit-label">Entangled Pair</span>
-            <div id="entangledState" class="qubit-state">(|00⟩ + |11⟩) / √2</div>
+            <div id="entangledState" class="qubit-state">(|00&rang; + |11&rang;) / &radic;2</div>
             <p class="qubit-desc">Shared between Alice and Bob</p>
           </article>
           <article class="qubit-card">
@@ -97,6 +97,20 @@
         </div>
 
         <canvas id="teleportCanvas" width="1120" height="320"></canvas>
+      </section>
+
+      <section class="panel circuit-panel">
+        <div class="section-head">
+          <h2>Quantum Circuit</h2>
+        </div>
+        <canvas id="circuitCanvas" width="760" height="250"></canvas>
+      </section>
+
+      <section class="panel equation-panel">
+        <div class="section-head">
+          <h2>State Equation</h2>
+        </div>
+        <pre id="equationOutput" class="equation-output"></pre>
       </section>
 
       <section class="panel story-panel">
@@ -125,6 +139,7 @@
           </div>
         </div>
         <p id="mathHintOutput" class="small-note"></p>
+        <p id="keySummary" class="summary"></p>
       </section>
 
       <section class="panel table-panel">

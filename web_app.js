@@ -1,31 +1,31 @@
 const STATE_LIBRARY = {
   zero: {
-    label: "|0⟩",
+    label: "|0>",
     desc: "north pole of the Bloch sphere",
     vector: [0, -1],
   },
   one: {
-    label: "|1⟩",
+    label: "|1>",
     desc: "south pole of the Bloch sphere",
     vector: [0, 1],
   },
   plus: {
-    label: "|+⟩",
+    label: "|+>",
     desc: "equal superposition on the x-axis",
     vector: [1, 0],
   },
   minus: {
-    label: "|−⟩",
+    label: "|->",
     desc: "equal superposition on the negative x-axis",
     vector: [-1, 0],
   },
   iplus: {
-    label: "|i+⟩",
+    label: "|i+>",
     desc: "positive y-axis phase state",
     vector: [0.7, -0.7],
   },
   iminus: {
-    label: "|i−⟩",
+    label: "|i->",
     desc: "negative y-axis phase state",
     vector: [-0.7, 0.7],
   },
@@ -66,6 +66,8 @@ const els = {
   timelineList: document.getElementById("timelineList"),
   keySummary: document.getElementById("keySummary"),
   teleportCanvas: document.getElementById("teleportCanvas"),
+  circuitCanvas: document.getElementById("circuitCanvas"),
+  equationOutput: document.getElementById("equationOutput"),
 };
 
 const state = {
@@ -91,37 +93,47 @@ function buildRun() {
     {
       title: "Prepare the unknown qubit",
       text: `Alice starts with ${picked.label}, the state she wants to transfer without directly copying it.`,
-      bobLabel: "waiting…",
+      bobLabel: "waiting...",
       bobDesc: "Bob has not received any quantum information yet.",
       hint: `Input state: ${picked.label}`,
+      equation: `Start with the unknown state\n|psi> = ${picked.label}\n\nSystem:\n|psi> ⊗ |0> ⊗ |0>`,
+      activeOps: [],
     },
     {
       title: "Create entanglement",
-      text: "Alice and Bob share an entangled Bell pair: (|00⟩ + |11⟩) / √2.",
+      text: "Alice and Bob share an entangled Bell pair: (|00> + |11>) / sqrt(2).",
       bobLabel: "entangled",
       bobDesc: "Bob's qubit is correlated with Alice's pair partner.",
-      hint: "Shared Bell pair: (|00⟩ + |11⟩) / √2",
+      hint: "Shared Bell pair: (|00> + |11>) / sqrt(2)",
+      equation: `After H on Alice's entanglement qubit and CNOT to Bob:\n(|00> + |11>) / sqrt(2)\n\nFull 3-qubit state:\n|psi> ⊗ (|00> + |11>) / sqrt(2)`,
+      activeOps: ["H_pair", "CNOT_pair"],
     },
     {
       title: "Bell measurement",
       text: `Alice performs a Bell-basis measurement on her two qubits and gets classical bits ${bits}. Her original state is destroyed here.`,
       bobLabel: `${correction.label} · ${picked.label}`,
       bobDesc: "Before correction, Bob's qubit is a transformed version of the target state.",
-      hint: `Measurement bits = ${bits}, so Bob temporarily has ${correction.label}|ψ⟩.`,
+      hint: `Measurement bits = ${bits}, so Bob temporarily has ${correction.label}|psi>.`,
+      equation: `Alice applies CNOT and H, then measures.\nMeasurement result: m1m2 = ${bits}\n\nBob collapses to:\n${correction.label}|psi>`,
+      activeOps: ["CNOT_bell", "H_input", "MEASURE"],
     },
     {
       title: "Send classical bits",
       text: "Alice sends the two classical bits to Bob over a normal communication channel.",
       bobLabel: `${correction.label} · ${picked.label}`,
       bobDesc: "Bob now knows which correction to apply.",
-      hint: `Classical channel sends m₁m₂ = ${bits}`,
+      hint: `Classical channel sends m1m2 = ${bits}`,
+      equation: `Classical communication only:\nm1m2 = ${bits}\n\nNo new quantum operation happens here,\nbut Bob learns which gate to apply.`,
+      activeOps: ["CLASSICAL"],
     },
     {
       title: "Bob reconstructs the state",
       text: `Bob applies ${correction.label} and recovers ${picked.label}. The state has been transferred, not copied.`,
       bobLabel: picked.label,
       bobDesc: `Teleportation complete. Bob now holds ${picked.label}.`,
-      hint: `Bob applies ${correction.label}, so ${correction.label}(${correction.label}|ψ⟩) = |ψ⟩`,
+      hint: `Bob applies ${correction.label}, so ${correction.label}(${correction.label}|psi>) = |psi>.`,
+      equation: `Bob applies ${correction.label}.\n\n${correction.label}(${correction.label}|psi>) = |psi>\n\nRecovered state:\n${picked.label}`,
+      activeOps: ["CORRECTION"],
     },
   ];
 
@@ -157,6 +169,7 @@ function renderStep() {
   els.bobState.textContent = step.bobLabel;
   els.bobDesc.textContent = step.bobDesc;
   els.mathHintOutput.textContent = els.mathHintsInput.checked ? step.hint : "";
+  els.equationOutput.textContent = els.mathHintsInput.checked ? step.equation : "Enable math hints to see the state equations.";
   els.storyOutput.innerHTML = run.steps.map((item, idx) => `
     <div class="story-step">
       <span class="title">${idx + 1}. ${item.title}${idx === state.activeStep ? " • active" : ""}</span>
@@ -165,6 +178,7 @@ function renderStep() {
   `).join("");
   els.keySummary.textContent = step.text;
   drawStage();
+  drawCircuit();
 }
 
 function renderTimeline() {
@@ -243,6 +257,106 @@ function drawStage() {
   ctx.fillStyle = "#eef6ff";
   ctx.font = "15px Segoe UI";
   ctx.fillText(step.title, 24, 286);
+}
+
+function gateBox(ctx, x, y, label, active, color = "#7bc7ff") {
+  ctx.fillStyle = active ? color : "rgba(255,255,255,0.08)";
+  ctx.fillRect(x - 18, y - 18, 36, 36);
+  ctx.strokeStyle = active ? color : "rgba(255,255,255,0.16)";
+  ctx.lineWidth = 2;
+  ctx.strokeRect(x - 18, y - 18, 36, 36);
+  ctx.fillStyle = active ? "#041019" : "#eef6ff";
+  ctx.font = "bold 16px Segoe UI";
+  ctx.fillText(label, x - 8, y + 6);
+}
+
+function drawCircuit() {
+  const canvas = els.circuitCanvas;
+  const ctx = canvas.getContext("2d");
+  const width = canvas.width;
+  const height = canvas.height;
+  ctx.clearRect(0, 0, width, height);
+
+  const ops = state.run.steps[state.activeStep].activeOps;
+  const lines = [
+    { y: 60, label: "q0 input" },
+    { y: 125, label: "q1 Alice" },
+    { y: 190, label: "q2 Bob" },
+  ];
+
+  ctx.fillStyle = "#eef6ff";
+  ctx.font = "15px Segoe UI";
+  lines.forEach((line) => {
+    ctx.fillText(line.label, 20, line.y + 5);
+    ctx.strokeStyle = "rgba(255,255,255,0.24)";
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(110, line.y);
+    ctx.lineTo(width - 40, line.y);
+    ctx.stroke();
+  });
+
+  gateBox(ctx, 220, 125, "H", ops.includes("H_pair"), "#d5a6ff");
+
+  ctx.strokeStyle = ops.includes("CNOT_pair") ? "#d5a6ff" : "rgba(255,255,255,0.2)";
+  ctx.lineWidth = 3;
+  ctx.beginPath();
+  ctx.moveTo(300, 125);
+  ctx.lineTo(300, 190);
+  ctx.stroke();
+  ctx.beginPath();
+  ctx.arc(300, 125, 7, 0, Math.PI * 2);
+  ctx.fillStyle = ops.includes("CNOT_pair") ? "#d5a6ff" : "rgba(255,255,255,0.2)";
+  ctx.fill();
+  ctx.beginPath();
+  ctx.arc(300, 190, 13, 0, Math.PI * 2);
+  ctx.stroke();
+  ctx.beginPath();
+  ctx.moveTo(287, 190);
+  ctx.lineTo(313, 190);
+  ctx.moveTo(300, 177);
+  ctx.lineTo(300, 203);
+  ctx.stroke();
+
+  ctx.strokeStyle = ops.includes("CNOT_bell") ? "#7effd6" : "rgba(255,255,255,0.2)";
+  ctx.beginPath();
+  ctx.moveTo(400, 60);
+  ctx.lineTo(400, 125);
+  ctx.stroke();
+  ctx.beginPath();
+  ctx.arc(400, 60, 7, 0, Math.PI * 2);
+  ctx.fillStyle = ops.includes("CNOT_bell") ? "#7effd6" : "rgba(255,255,255,0.2)";
+  ctx.fill();
+  ctx.beginPath();
+  ctx.arc(400, 125, 13, 0, Math.PI * 2);
+  ctx.stroke();
+  ctx.beginPath();
+  ctx.moveTo(387, 125);
+  ctx.lineTo(413, 125);
+  ctx.moveTo(400, 112);
+  ctx.lineTo(400, 138);
+  ctx.stroke();
+
+  gateBox(ctx, 500, 60, "H", ops.includes("H_input"), "#7effd6");
+  gateBox(ctx, 600, 60, "M", ops.includes("MEASURE"), "#ffd166");
+  gateBox(ctx, 600, 125, "M", ops.includes("MEASURE"), "#ffd166");
+
+  if (ops.includes("CLASSICAL") || ops.includes("CORRECTION")) {
+    ctx.strokeStyle = "#ffd166";
+    ctx.setLineDash([8, 6]);
+    ctx.beginPath();
+    ctx.moveTo(618, 92);
+    ctx.lineTo(705, 92);
+    ctx.lineTo(705, 190);
+    ctx.lineTo(758, 190);
+    ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle = "#ffd166";
+    ctx.font = "14px Consolas";
+    ctx.fillText(state.run.bits, 654, 84);
+  }
+
+  gateBox(ctx, 790, 190, state.run.correction.label, ops.includes("CORRECTION"), "#7bc7ff");
 }
 
 function nextStep() {
