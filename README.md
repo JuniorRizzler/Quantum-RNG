@@ -83,6 +83,16 @@ If your webcam is not camera `0`, try:
 python app.py --camera-index 1
 ```
 
+## Vercel Deployment
+
+This repository also includes a static [index.html](C:/Users/2029089/camera-qrng-prototype/index.html) landing page so it can deploy cleanly on Vercel.
+
+Important:
+
+- the deployed Vercel site is a project page, not the desktop app itself
+- the real RNG lab uses `Tkinter` and local webcam access, so it must run on your own machine
+- Vercel cannot directly host a local desktop GUI
+
 ## Best Demo Flow
 
 1. Cover the camera lens and generate a sample.

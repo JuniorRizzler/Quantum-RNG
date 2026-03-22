@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quantum RNG Lab</title>
+  <style>
+    :root {
+      --bg: #07111d;
+      --panel: #102033;
+      --panel-2: #0d1a29;
+      --text: #edf6ff;
+      --muted: #a8bdd1;
+      --accent: #49dcb1;
+      --accent-2: #74c0fc;
+      --warn: #ffd166;
+      --border: rgba(255,255,255,0.08);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Segoe UI", system-ui, sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(116,192,252,0.14), transparent 30%),
+        radial-gradient(circle at bottom right, rgba(73,220,177,0.12), transparent 25%),
+        var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+    .wrap {
+      width: min(1120px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 40px 0 64px;
+    }
+    .hero {
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 24px;
+      align-items: stretch;
+    }
+    .card {
+      background: linear-gradient(180deg, rgba(16,32,51,0.95), rgba(13,26,41,0.95));
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      padding: 28px;
+      box-shadow: 0 12px 40px rgba(0,0,0,0.28);
+    }
+    .eyebrow {
+      color: var(--accent);
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      font-size: 12px;
+      margin-bottom: 12px;
+    }
+    h1 {
+      margin: 0 0 14px;
+      font-size: clamp(36px, 7vw, 62px);
+      line-height: 0.98;
+    }
+    p {
+      color: var(--muted);
+      line-height: 1.6;
+      margin: 0 0 16px;
+    }
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 20px;
+    }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      text-decoration: none;
+      color: var(--text);
+      background: #17314e;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 12px 18px;
+      font-weight: 600;
+    }
+    .btn.primary {
+      background: linear-gradient(90deg, var(--accent), var(--accent-2));
+      color: #041019;
+      border: none;
+    }
+    .stat-grid, .feature-grid {
+      display: grid;
+      gap: 16px;
+      margin-top: 24px;
+    }
+    .stat-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .feature-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .stat, .feature {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 18px;
+    }
+    .stat strong {
+      display: block;
+      font-size: 26px;
+      margin-bottom: 6px;
+      color: var(--text);
+    }
+    .terminal {
+      background: #06101a;
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 18px;
+      font-family: Consolas, monospace;
+      white-space: pre-wrap;
+      line-height: 1.6;
+      color: #c5e3ff;
+      margin-top: 16px;
+    }
+    .label {
+      display: inline-block;
+      background: rgba(255, 209, 102, 0.12);
+      color: var(--warn);
+      border: 1px solid rgba(255, 209, 102, 0.24);
+      border-radius: 999px;
+      padding: 8px 12px;
+      font-size: 13px;
+      margin-bottom: 16px;
+    }
+    .section {
+      margin-top: 24px;
+    }
+    .section h2 {
+      margin: 0 0 12px;
+      font-size: 28px;
+    }
+    ul {
+      margin: 0;
+      padding-left: 18px;
+      color: var(--muted);
+      line-height: 1.8;
+    }
+    code {
+      color: #d7f4ff;
+      font-family: Consolas, monospace;
+    }
+    @media (max-width: 900px) {
+      .hero { grid-template-columns: 1fr; }
+      .stat-grid, .feature-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="hero">
+      <section class="card">
+        <div class="eyebrow">Desktop Experiment</div>
+        <h1>Quantum RNG Lab</h1>
+        <p>
+          A polished Python hardware-noise randomness lab that uses webcam sensor entropy,
+          multiple extraction pipelines, statistical validation, random integer generation,
+          and experiment report export.
+        </p>
+        <div class="label">This deployed page is a project landing page. The actual app runs locally on your computer.</div>
+        <div class="actions">
+          <a class="btn primary" href="https://github.com/JuniorRizzler/Quantum-RNG">View GitHub Repo</a>
+          <a class="btn" href="https://github.com/JuniorRizzler/Quantum-RNG#readme">Read Setup Guide</a>
+        </div>
+
+        <div class="stat-grid">
+          <div class="stat">
+            <strong>3</strong>
+            Extraction modes
+          </div>
+          <div class="stat">
+            <strong>6</strong>
+            Randomness checks
+          </div>
+          <div class="stat">
+            <strong>2</strong>
+            Report formats
+          </div>
+        </div>
+      </section>
+
+      <aside class="card">
+        <div class="eyebrow">Run It Locally</div>
+        <p>This project is built with <code>Tkinter</code> and <code>OpenCV</code>, so it needs local access to your webcam. Vercel cannot run the desktop GUI directly.</p>
+        <div class="terminal">git clone https://github.com/JuniorRizzler/Quantum-RNG.git
+cd Quantum-RNG
+python -m pip install -r requirements.txt
+python app.py</div>
+        <div class="section">
+          <h2>What It Tests</h2>
+          <ul>
+            <li>ones ratio</li>
+            <li>byte entropy</li>
+            <li>monobit test</li>
+            <li>runs test</li>
+            <li>serial correlation</li>
+            <li>chi-square distribution</li>
+          </ul>
+        </div>
+      </aside>
+    </div>
+
+    <section class="card section">
+      <h2>Why This Project Is Different</h2>
+      <div class="feature-grid">
+        <div class="feature">
+          <strong>Physical entropy source</strong>
+          <p>Instead of using a normal pseudo-random function directly, the app samples real camera sensor noise and frame-to-frame changes.</p>
+        </div>
+        <div class="feature">
+          <strong>Multiple extraction pipelines</strong>
+          <p>Compare raw least-significant bits, Von Neumann bias reduction, and SHA-256 whitened output.</p>
+        </div>
+        <div class="feature">
+          <strong>Experiment logging</strong>
+          <p>Record different conditions like lens covered, room light, and moving scene, then compare their output quality.</p>
+        </div>
+        <div class="feature">
+          <strong>Report export</strong>
+          <p>Export JSON and Markdown reports for school demos, judging, or GitHub examples.</p>
+        </div>
+      </div>
+    </section>
+  </div>
+</body>
+</html>
+
