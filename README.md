@@ -1,73 +1,52 @@
 # Quantum RNG Lab
 
-A browser-based hardware-noise random number lab that uses webcam sensor entropy, extraction pipelines, statistical validation, random integer generation, comparison logging, and report export.
+A web-based hardware-noise random number lab that captures webcam entropy in the browser, applies extraction pipelines, evaluates output with statistical tests, generates unbiased random integers, and exports experiment reports.
 
-## Live App
+## Live Web App
 
-This repository is now structured to run as a static web app on Vercel.
+This repository is structured as a static site for Vercel.
 
-Main web files:
+Core web files:
 
 - `index.html`
 - `styles.css`
 - `web_app.js`
 - `vercel.json`
 
-## What It Does
+## Features
 
-- captures webcam frames directly in the browser
-- compares consecutive grayscale frames to isolate noisy changes
-- extracts least-significant bits from pixel differences
-- supports three output modes:
+- webcam-based entropy capture with `getUserMedia`
+- grayscale frame differencing to isolate noisy changes
+- three extraction modes:
   - `raw_lsb`
   - `von_neumann`
   - `sha256_whitened`
-- runs simple randomness checks:
+- randomness checks:
   - ones ratio
   - byte entropy
   - monobit test
   - runs test
   - serial correlation
   - chi-square
-- generates unbiased random integers in a chosen range
-- draws a histogram and sample-history chart
-- records comparisons across conditions like `lens covered`, `room light`, and `moving scene`
-- exports JSON and Markdown reports
+- random whole-number generation in a chosen range
+- histogram and history charts
+- comparison logging across physical conditions
+- JSON and Markdown report export
 
-## Why It Stands Out
-
-This is not just a button that prints a random number. It is built as an experiment:
-
-- it uses a physical entropy source
-- it compares extraction methods
-- it measures statistical quality
-- it lets you record multiple real-world conditions
-- it exports reports you can show in a project or competition
-
-## Important Honesty Note
-
-Safe description:
-
-`hardware-noise random generator using camera sensor noise, with possible quantum shot-noise contribution`
-
-Do not claim this is a certified true quantum random number generator. The project is strongest when it is scientifically honest.
-
-## Browser Use
+## How To Use
 
 1. Open the deployed site.
 2. Click `Start Camera`.
-3. Allow camera permission.
+3. Allow browser camera access.
 4. Click `Generate Sample`.
-5. Review the randomness tests and charts.
+5. Review the statistics and charts.
 6. Click `Generate Integer`.
-7. Record a few comparison conditions.
+7. Record a few conditions like `lens covered` and `room light`.
 8. Export the report.
 
 ## Local Development
 
-You can open the web app locally by serving the folder with any static file server.
-
-Simple option:
+Serve the project as a static site:
 
 ```bash
 python -m http.server 8000
@@ -79,15 +58,18 @@ Then open:
 http://localhost:8000
 ```
 
+## Important Note
+
+Safe description:
+
+`hardware-noise random generator using camera sensor noise, with possible quantum shot-noise contribution`
+
+Do not claim this is a certified true quantum random number generator.
+
 ## Legacy Desktop Version
 
-The repo still includes a local Python desktop version for reference:
+The old Python desktop version is preserved only as reference in:
 
-- `desktop_app.py`
-- `qrng/`
+- `legacy-desktop/`
 
-That version is not used by Vercel. The deployable app is the browser version.
-
-## Repo Description
-
-An experimental hardware-noise randomness lab built for the web that captures webcam entropy, applies extraction pipelines, evaluates output with statistical tests, visualizes distribution quality in real time, generates unbiased random integers, and exports reproducible experiment reports.
+It is not used by the deployed web app.
